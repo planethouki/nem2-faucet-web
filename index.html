@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>faucet dragon</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.5/css/uikit.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.5/js/uikit.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.5/js/uikit-icons.min.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <div class="uk-section">
+                <div class="uk-container">
+                    <h3>Faucet</h3>
+                    <div class="uk-margin">
+                        <input class="uk-input" type="text" placeholder="Input" v-model="address">
+                    </div>
+                    <button class="uk-button uk-button-default" @click="get">Get</button>
+                    
+                    <div class="uk-margin">
+                        <div uk-alert class="uk-alert-danger" v-if="alert">{{ alert }}</div>
+                        <ul class="uk-list">
+                            <li v-for="h in hashes">
+                                <a :href="h.link" target="_blank">{{ h.hash }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    hashes: [],
+                    alert: '',
+                    address: '',
+                    api: 'https://faucet-dragon-api.azurewebsites.net/api/HttpTrigger',
+                    node: 'http://dragon.48gh23s.xyz:3000'
+                },
+                methods: {
+                    get() {
+                        this.alert = ''
+                        if (!this.address) {
+                            this.alert = "blank address"
+                            return
+                        }
+                        axios.get(`${this.api}?recipient=${this.address}`).then((res) => {
+                            this.hashes.push({
+                                hash: res.data,
+                                link: `${this.node}/transaction/${res.data}/status`
+                            })
+                        }).catch(() => {
+                            this.alert = 'error'
+                        })
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
