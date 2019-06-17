@@ -1,1 +1,1 @@
-# nem2-faucet-web-azure
+# nem2-faucet-web
